@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #10b981;
-  /* emerald-700: passes WCAG AA (≥4.5:1) for small text on white */
-  --color-brand-dark: #047857;
-  --color-ink: #0b1220;
-  --color-ink-soft: #1e293b;
-  --color-mist: #f5f7fa;
+  /* Signature yellow, used for bands, pins and primary buttons (always with dark text) */
+  --color-brand: #dccb01;
+  --color-brand-light: #ece05a;
+  /* Dark olive for small accent text on light backgrounds (WCAG AA on white/cream) */
+  --color-brand-dark: #6e6400;
+  /* Warm dark brown used for the header, overlays and footer */
+  --color-ink: #2b2621;
+  --color-ink-soft: #473e36;
+  --color-muted: #a39382;
+  /* Cream background for the introduction timeline and light sections */
+  --color-mist: #f6eee1;
 
-  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Barlow Condensed", "Helvetica Neue", Arial, sans-serif;
 }
 
 :root {
@@ -17,13 +23,13 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 88px;
+  scroll-padding-top: 112px;
 }
 
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: var(--color-ink);
+  color: #2b2621;
   background: #ffffff;
   -webkit-font-smoothing: antialiased;
 }
@@ -37,28 +43,10 @@ summary:focus-visible,
 [tabindex]:focus-visible {
   outline: 3px solid var(--color-brand);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-/* Hero backdrop: store-floor grid with soft brand glow */
-.bg-hero {
-  background-color: var(--color-ink);
-  background-image:
-    radial-gradient(40% 60% at 15% 10%, rgba(16, 185, 129, 0.28), transparent 60%),
-    radial-gradient(35% 50% at 90% 90%, rgba(56, 189, 248, 0.18), transparent 60%),
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: auto, auto, 48px 48px, 48px 48px;
-}
-
-.text-gradient {
-  background: linear-gradient(90deg, #34d399, #38bdf8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Horizontally scrollable tab rows without a visible scrollbar */
+/* Horizontally scrollable rows without a visible scrollbar */
 .no-scrollbar {
   scrollbar-width: none;
 }
@@ -79,16 +67,6 @@ summary:focus-visible,
   transform: none;
 }
 
-@keyframes grow-bar {
-  from {
-    transform: scaleY(0);
-  }
-}
-.animate-grow {
-  transform-origin: bottom;
-  animation: grow-bar 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -97,6 +75,19 @@ summary:focus-visible,
 }
 .animate-fade {
   animation: fade-in 0.35s ease-out both;
+}
+
+/* Slow zoom on hero slides, like a Ken Burns effect */
+@keyframes slow-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+.animate-slow-zoom {
+  animation: slow-zoom 9s ease-out both;
 }
 
 /* FAQ: rotate the chevron when a <details> is open */
@@ -116,8 +107,8 @@ details summary::-webkit-details-marker {
     transform: none;
     transition: none;
   }
-  .animate-grow,
-  .animate-fade {
+  .animate-fade,
+  .animate-slow-zoom {
     animation: none;
   }
 }

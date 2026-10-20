@@ -38,3 +38,8 @@ The UI follows common HCI guidelines: visible system status (active nav section,
 success states), inline form validation with plain-language error messages, keyboard support
 (skip link, focus rings, WAI-ARIA tabs with arrow keys), 44px+ touch targets, a sticky mobile
 action bar, WCAG AA colour contrast and `prefers-reduced-motion` support.
+
+## Photography
+
+Hero, module and background photos are loaded from Unsplash (free under the Unsplash
+License) and listed in `src/data/images.ts`. Swap them for your own store photography any time.

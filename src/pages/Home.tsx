@@ -1,68 +1,54 @@
 import {
-  ArrowRight,
   BarChart3,
-  Boxes,
   Briefcase,
-  CalendarSync,
-  Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   DatabaseZap,
   FileSpreadsheet,
-  Package,
+  Pause,
+  Play,
   PlugZap,
   RefreshCw,
   Sparkles,
   Store,
   Tags,
   TrendingUp,
-  TriangleAlert,
   Users,
   Wallet,
-  X,
 } from "lucide-react";
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import ContactSection from "../components/ContactSection.tsx";
 import Reveal from "../components/Reveal.tsx";
+import { HERO_SLIDES, MODULES_BACKGROUND } from "../data/images.ts";
 import { MODULES } from "../data/modules.ts";
 
 const KEY_INSIGHTS = [
-  { icon: TrendingUp, text: "Clear view of expected closing stock and gross profit, every week" },
-  { icon: Boxes, text: "Early warnings of over- and under-stock through open-to-buy (OTB / WSSI)" },
-  { icon: CalendarSync, text: "Financial calendar and merchandise calendar kept in sync" },
-  { icon: Package, text: "Live information on stock, open orders and ageing inventory" },
-  { icon: Tags, text: "AI markdown planning built into the same workflow" },
+  "Visibility of expected closing stock and gross profit",
+  "Timely warnings of over- or under-stock (open to buy, OTB / WSSI)",
+  "Financial calendar and merchandise calendar kept in sync",
+  "Instant information about stock, open orders and ageing inventory",
+  "AI markdown planning built into the same workflow",
 ];
 
-const PILLARS = [
+const TIMELINE = [
   {
-    icon: FileSpreadsheet,
-    title: "Goodbye, planning spreadsheets",
-    text: "Spreadsheets are fragile, slow and only as accurate as the person maintaining them. Retail AI replaces them with one shared, controlled plan — so your team makes decisions instead of fixing formulas.",
+    lead: "Spreadsheets are still the most common planning tool.",
+    text: "But they break easily, take hours to maintain and are only as accurate as the person updating them. Once your plans live in Retail AI, you'll wonder how you ever ran the business without it.",
   },
   {
-    icon: Wallet,
-    title: "Enterprise power, mid-market price",
-    text: "Big-name planning suites cost a fortune and take years to roll out. Retail AI gives growing fashion retailers the same depth of planning at a fraction of the cost and effort.",
+    lead: "Enterprise planning suites cost millions.",
+    text: "They're expensive to buy and complicated to implement — more than most fashion retailers want to spend. Yet they still need a robust, feature-rich solution. Retail AI was built with exactly those retailers in mind.",
   },
   {
-    icon: RefreshCw,
-    title: "One standard product, always improving",
-    text: "Every customer runs the same software — no custom forks that lock you in. Regular releases add features shaped together with our customers.",
+    lead: "Retail AI is a standard, packaged solution.",
+    text: "Every customer runs the same software, with no custom forks that lock you in. Regular releases add new features, developed together with our customers, so you always benefit from retail best practice.",
   },
   {
-    icon: PlugZap,
-    title: "Works alongside your ERP",
-    text: "Keep your existing ERP. Sales, stock, purchase orders and product data flow in automatically, so nobody re-keys data and every plan uses today's numbers.",
+    lead: "Retail AI works alongside your existing ERP.",
+    text: "Sales, stock, purchase orders and product data are imported automatically. There's no manual data entry, so you always work with up-to-date information.",
   },
-];
-
-const COMPARISON = [
-  { topic: "Data", before: "Copied and pasted from ERP exports", after: "Imported from your ERP automatically" },
-  { topic: "Accuracy", before: "One broken formula skews the whole season", after: "Controlled, validated calculations" },
-  { topic: "Collaboration", before: "Versions emailed back and forth", after: "One live plan for every team" },
-  { topic: "Forecasting", before: "Last year plus a gut-feel percentage", after: "AI forecasts that learn from your history" },
-  { topic: "Markdowns", before: "Blanket discounts at the end of season", after: "Targeted proposals with margin impact" },
 ];
 
 const USERS = [
@@ -72,14 +58,22 @@ const USERS = [
   { icon: Store, title: "Allocation & Stores", text: "Get the right depth of stock into each store and channel." },
 ];
 
-const STEPS = [
-  { icon: DatabaseZap, title: "Connect", text: "We link Retail AI to your ERP and import your sales, stock and product history." },
-  { icon: Sparkles, title: "Forecast", text: "Our AI models learn your seasonality and build a baseline for every plan." },
-  { icon: BarChart3, title: "Plan & approve", text: "Your team refines the plans, runs what-if scenarios and signs off." },
-  { icon: RefreshCw, title: "Execute", text: "Orders and new prices go back to your ERP; plans update as actuals arrive." },
+const BENEFITS = [
+  { icon: FileSpreadsheet, topic: "Data", text: "No more copying and pasting ERP exports — sales, stock and orders flow in automatically." },
+  { icon: TrendingUp, topic: "Forecasting", text: "Swap “last year plus a percentage” for AI forecasts that learn from your own history." },
+  { icon: Users, topic: "Collaboration", text: "Stop emailing spreadsheet versions around — every team works from one live plan." },
+  { icon: Tags, topic: "Markdowns", text: "Replace blanket end-of-season discounts with targeted proposals that show their margin impact." },
+  { icon: Wallet, topic: "Open to buy", text: "Know every week exactly how much you can still buy, before you overcommit." },
 ];
 
-const INTEGRATIONS = ["Odoo", "Microsoft Dynamics 365", "SAP Business One", "Shopify", "CSV / SFTP feeds"];
+const STEPS = [
+  { icon: DatabaseZap, title: "Connect", text: "We link Retail AI to your ERP and import your history." },
+  { icon: Sparkles, title: "Forecast", text: "AI models learn your seasonality and build a baseline." },
+  { icon: BarChart3, title: "Plan & approve", text: "Your team refines plans and runs what-if scenarios." },
+  { icon: RefreshCw, title: "Execute", text: "Orders and prices go back to the ERP automatically." },
+];
+
+const INTEGRATIONS = ["Odoo", "Microsoft Dynamics 365", "SAP Business One", "Shopify", "CSV / SFTP"];
 
 const FAQS = [
   {
@@ -88,7 +82,7 @@ const FAQS = [
   },
   {
     q: "Can we start with just one module?",
-    a: "Yes. Many retailers start with Open-to-Buy or Markdown Optimization, where the payback is fastest, and add the other modules later. All modules share the same data, so nothing is wasted.",
+    a: "Yes. Many retailers start with Open to Buy or Markdown Planning, where the payback is fastest, and add the other modules later. All modules share the same data, so nothing is wasted.",
   },
   {
     q: "Is Retail AI only for fashion?",
@@ -96,93 +90,151 @@ const FAQS = [
   },
   {
     q: "How much does it cost?",
-    a: "Pricing depends on the modules you choose and the size of your business. Book a demo and we'll give you a clear quote — with no surprise implementation fees.",
+    a: "Pricing depends on the modules you choose and the size of your business. Book a demo and we'll give you a clear quote.",
   },
   {
     q: "What does the AI actually do?",
-    a: "It forecasts demand at style-colour, store and channel level, seeds budgets from your history and targets, flags exceptions when sales drift from plan, and proposes markdowns with their margin impact. Your planners always stay in control and approve every change.",
+    a: "It forecasts demand at style-colour, store and channel level, seeds budgets from your history and targets, flags exceptions when sales drift from plan, and proposes markdowns with their margin impact. Your planners stay in control and approve every change.",
   },
 ];
 
-function SectionHeading({ id, eyebrow, title, text, light = false }: { id?: string; eyebrow: string; title: string; text?: string; light?: boolean }) {
+function SectionTitle({ id, children, light = false, className = "" }: { id?: string; children: ReactNode; light?: boolean; className?: string }) {
   return (
-    <Reveal className="mx-auto max-w-3xl text-center">
-      <p className={`text-sm font-semibold uppercase tracking-wider ${light ? "text-brand" : "text-brand-dark"}`}>{eyebrow}</p>
-      <h2 id={id} className={`mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl ${light ? "text-white" : ""}`}>
-        {title}
-      </h2>
-      {text && <p className={`mt-4 text-lg ${light ? "text-white/70" : "text-slate-600"}`}>{text}</p>}
-    </Reveal>
+    <h2 id={id} className={`font-display text-4xl font-bold uppercase leading-[0.95] tracking-wide sm:text-5xl ${light ? "text-white" : "text-[#222]"} ${className}`}>
+      {children}
+    </h2>
   );
 }
 
-function DashboardMock() {
-  const bars = [62, 74, 58, 81, 69, 88, 77, 92];
+function Hero() {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = window.setInterval(() => setIndex((i) => (i + 1) % HERO_SLIDES.length), 6000);
+    return () => window.clearInterval(timer);
+  }, [paused]);
+
   return (
-    <div className="relative" aria-hidden="true">
-      <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-brand/25 to-sky-400/20 blur-2xl" />
-      <div className="relative rounded-2xl border border-white/10 bg-ink-soft/80 p-5 shadow-2xl backdrop-blur">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
-            <p className="ml-2 text-xs font-semibold uppercase tracking-wider text-white/60">Open-to-Buy · SS Season</p>
-          </div>
-          <span className="flex items-center gap-1 rounded-full bg-brand/15 px-2.5 py-1 text-[11px] font-semibold text-brand">
-            <Sparkles className="h-3 w-3" /> AI forecast
-          </span>
+    <section aria-label="Introduction" className="relative flex min-h-[640px] items-center justify-center overflow-hidden bg-ink pt-24 text-white md:h-[92vh] md:pt-28">
+      {HERO_SLIDES.map((slide, i) => (
+        <div
+          key={slide.src}
+          aria-hidden={i !== index}
+          className={`absolute inset-0 transition-opacity duration-[1500ms] ${i === index ? "opacity-100" : "opacity-0"}`}
+        >
+          <img
+            src={slide.src}
+            alt={slide.alt}
+            className={`h-full w-full object-cover ${i === index && !paused ? "animate-slow-zoom" : ""}`}
+            fetchPriority={i === 0 ? "high" : "low"}
+          />
         </div>
-        <div className="mt-4 grid grid-cols-3 gap-3">
-          {[
-            { label: "Closing stock", value: "-12%", tone: "text-brand" },
-            { label: "Gross margin", value: "58.4%", tone: "text-white" },
-            { label: "OTB left", value: "18.2k units", tone: "text-sky-300" },
-          ].map((kpi) => (
-            <div key={kpi.label} className="rounded-xl bg-white/5 p-3">
-              <p className="text-[11px] text-white/60">{kpi.label}</p>
-              <p className={`mt-1 text-base font-bold sm:text-lg ${kpi.tone}`}>{kpi.value}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-5 flex h-36 gap-2">
-          {bars.map((h, i) => (
-            <div key={i} className="flex flex-1 flex-col justify-end gap-1">
-              <div className="animate-grow rounded-t bg-sky-400/40" style={{ height: `${h * 0.55}%`, animationDelay: `${i * 70}ms` }} />
-              <div className="animate-grow rounded-t bg-brand" style={{ height: `${h * 0.45}%`, animationDelay: `${i * 70}ms` }} />
-            </div>
-          ))}
-        </div>
-        <div className="mt-3 flex items-center justify-between text-[11px] text-white/60">
-          <span>Week 1</span>
-          <span className="flex items-center gap-3">
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-brand" /> Actual</span>
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-sky-400/60" /> Forecast</span>
-          </span>
-          <span>Week 8</span>
-        </div>
-      </div>
-      <div className="absolute -bottom-6 -left-4 max-w-[17rem] rounded-xl border border-amber-300/30 bg-ink p-3.5 text-xs text-white/85 shadow-2xl sm:-left-8">
-        <p className="flex items-center gap-1.5 font-semibold text-amber-300">
-          <TriangleAlert className="h-3.5 w-3.5" /> Overstock risk: Knitwear
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/60" />
+
+      <div className="relative mx-auto max-w-4xl px-4 text-center">
+        <h1 className="animate-fade font-display text-5xl font-semibold uppercase leading-none tracking-wide drop-shadow-lg sm:text-7xl lg:text-8xl">
+          Fashion Retail Planning
+        </h1>
+        <p className="animate-fade mx-auto mt-5 max-w-2xl text-lg font-semibold leading-snug drop-shadow sm:text-2xl">
+          In fashion retail, the winners aren't the biggest —
+          <br className="hidden sm:block" /> they're the ones who adapt to change the fastest.
         </p>
-        <p className="mt-1">Bring the 20% markdown forward 2 weeks to hit the closing-stock target.</p>
+        <div className="animate-fade mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+          <Link
+            to="/#contact"
+            className="inline-flex min-h-12 items-center justify-center rounded bg-brand px-8 font-display text-lg font-bold uppercase tracking-wider text-ink shadow-lg transition hover:bg-brand-light"
+          >
+            Book a free demo
+          </Link>
+          <Link
+            to="/modules"
+            className="inline-flex min-h-12 items-center justify-center rounded border-2 border-white/80 px-8 font-display text-lg font-bold uppercase tracking-wider transition hover:bg-white hover:text-ink"
+          >
+            Discover our modules
+          </Link>
+        </div>
       </div>
-    </div>
+
+      {/* Slide controls: users can see, choose and pause the rotating images (WCAG 2.2.2) */}
+      <div className="absolute bottom-7 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/35 px-3 py-1.5 backdrop-blur">
+        {HERO_SLIDES.map((slide, i) => (
+          <button
+            key={slide.src}
+            type="button"
+            onClick={() => setIndex(i)}
+            aria-label={`Show image ${i + 1} of ${HERO_SLIDES.length}`}
+            aria-current={i === index}
+            className="flex h-8 w-8 items-center justify-center"
+          >
+            <span className={`block h-2.5 rounded-full transition-all ${i === index ? "w-6 bg-brand" : "w-2.5 bg-white/70"}`} />
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => setPaused((p) => !p)}
+          aria-label={paused ? "Play slideshow" : "Pause slideshow"}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-white/15"
+        >
+          {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+        </button>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 h-2 bg-brand" />
+    </section>
   );
 }
 
-function ModuleTabs() {
+function Timeline() {
+  return (
+    <section aria-label="Why Retail AI" className="relative overflow-hidden bg-mist py-20 sm:py-24">
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        {/* The winding line that connects each statement */}
+        <div className="absolute bottom-0 left-[27px] top-0 w-0.5 bg-[#d9cdb9] md:left-1/2 md:-translate-x-1/2" aria-hidden="true" />
+        <ol className="relative space-y-14 md:space-y-4">
+          {TIMELINE.map((item, i) => {
+            const left = i % 2 === 1;
+            const filled = i % 2 === 0;
+            return (
+              <Reveal as="li" key={item.lead} className="relative md:grid md:grid-cols-2 md:gap-20">
+                <span
+                  className={`absolute left-[14px] top-1 flex h-7 w-7 items-center justify-center rounded-full md:left-1/2 md:-translate-x-1/2 ${
+                    filled ? "bg-brand shadow-[0_0_0_6px_rgba(220,203,1,0.25)]" : "border-2 border-[#d9cdb9] bg-mist"
+                  }`}
+                  aria-hidden="true"
+                >
+                  <span className={`h-2.5 w-2.5 rounded-full ${filled ? "bg-white" : "bg-[#d9cdb9]"}`} />
+                </span>
+                <div className={`pl-16 md:pl-0 ${left ? "md:col-start-1 md:text-right" : "md:col-start-2"}`}>
+                  <p className="text-[17px] leading-relaxed text-ink-soft">
+                    <strong className="block font-display text-2xl font-bold uppercase leading-tight tracking-wide text-ink">
+                      {item.lead}
+                    </strong>
+                    <span className="mt-2 block">{item.text}</span>
+                  </p>
+                </div>
+              </Reveal>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function ModuleExplorer() {
   const [activeIndex, setActiveIndex] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const current = MODULES[activeIndex];
 
-  // WAI-ARIA tabs pattern: arrow keys move between tabs, Home/End jump to the ends.
+  // WAI-ARIA tabs pattern (vertical): arrow keys move between modules, Home/End jump to the ends.
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const last = MODULES.length - 1;
-    const next =
-      e.key === "ArrowRight" ? (activeIndex === last ? 0 : activeIndex + 1)
-      : e.key === "ArrowLeft" ? (activeIndex === 0 ? last : activeIndex - 1)
+    const forward = e.key === "ArrowDown" || e.key === "ArrowRight";
+    const back = e.key === "ArrowUp" || e.key === "ArrowLeft";
+    const next = forward ? (activeIndex === last ? 0 : activeIndex + 1)
+      : back ? (activeIndex === 0 ? last : activeIndex - 1)
       : e.key === "Home" ? 0
       : e.key === "End" ? last
       : null;
@@ -190,247 +242,205 @@ function ModuleTabs() {
     e.preventDefault();
     setActiveIndex(next);
     tabRefs.current[next]?.focus();
-    tabRefs.current[next]?.scrollIntoView({ block: "nearest", inline: "center" });
   };
 
   return (
-    <>
-      <div className="relative mt-12">
-        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:justify-center" role="tablist" aria-label="Planning modules" onKeyDown={onKeyDown}>
-          {MODULES.map((m, i) => {
-            const selected = i === activeIndex;
-            return (
-              <button
-                key={m.id}
-                ref={(el) => {
-                  tabRefs.current[i] = el;
-                }}
-                id={`tab-${m.id}`}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                aria-controls={`panel-${m.id}`}
-                tabIndex={selected ? 0 : -1}
-                onClick={() => setActiveIndex(i)}
-                className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-semibold transition ${
-                  selected ? "bg-brand text-ink shadow-lg shadow-brand/25" : "bg-white/5 text-white/75 ring-1 ring-white/10 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <m.icon className="h-4 w-4" aria-hidden="true" />
-                {m.title}
-              </button>
-            );
-          })}
+    <section id="modules" aria-labelledby="modules-heading">
+      <div className="bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionTitle id="modules-heading" className="md:ml-[33%]">
+              Discover our
+              <br />
+              modules
+            </SectionTitle>
+          </Reveal>
         </div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-ink lg:hidden" />
       </div>
 
-      <div
-        key={current.id}
-        id={`panel-${current.id}`}
-        role="tabpanel"
-        aria-labelledby={`tab-${current.id}`}
-        className="animate-fade mt-8 grid gap-8 rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-6 sm:p-10 lg:grid-cols-5"
-      >
-        <div className="lg:col-span-2">
-          <div className="flex items-center justify-between">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand/15 text-brand">
-              <current.icon className="h-7 w-7" aria-hidden="true" />
-            </span>
-            <span className="text-sm font-medium text-white/60">
-              {activeIndex + 1} of {MODULES.length}
-            </span>
+      <div className="relative bg-ink">
+        <img src={MODULES_BACKGROUND} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="relative mx-auto grid max-w-7xl md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div
+            role="tablist"
+            aria-orientation="vertical"
+            aria-label="Planning modules"
+            onKeyDown={onKeyDown}
+            className="no-scrollbar flex gap-2 overflow-x-auto bg-black/45 px-4 py-6 md:flex-col md:gap-1 md:overflow-visible md:px-10 md:py-14"
+          >
+            {MODULES.map((m, i) => {
+              const selected = i === activeIndex;
+              return (
+                <button
+                  key={m.id}
+                  ref={(el) => {
+                    tabRefs.current[i] = el;
+                  }}
+                  id={`tab-${m.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls={`panel-${m.id}`}
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => setActiveIndex(i)}
+                  className="group flex shrink-0 items-center gap-4 rounded-full py-1.5 pl-1.5 pr-5 text-left transition hover:bg-white/5"
+                >
+                  <span
+                    className={`flex shrink-0 items-center justify-center rounded-full bg-brand text-ink transition-all duration-300 ${
+                      selected ? "h-16 w-16 md:h-20 md:w-20" : "h-11 w-11 group-hover:scale-105"
+                    }`}
+                  >
+                    <m.icon className={selected ? "h-8 w-8" : "h-5 w-5"} aria-hidden="true" />
+                  </span>
+                  <span
+                    className={`font-display font-semibold uppercase leading-none tracking-wide text-white transition-all ${
+                      selected ? "text-2xl md:text-4xl" : "text-lg text-white/85"
+                    }`}
+                  >
+                    {m.shortTitle}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          <h3 className="mt-5 text-2xl font-bold text-white">{current.title}</h3>
-          <p className="mt-3 text-white/70">{current.summary}</p>
-          <Link to={`/modules#${current.id}`} className="group mt-6 inline-flex min-h-11 items-center gap-2 font-semibold text-brand">
-            See all {current.features.length} features
-            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
-          </Link>
+
+          <div
+            key={current.id}
+            id={`panel-${current.id}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${current.id}`}
+            className="animate-fade flex flex-col justify-center px-6 py-10 md:px-14 md:py-14"
+          >
+            <p className="font-display text-sm font-semibold uppercase tracking-widest text-white/70">
+              Module {activeIndex + 1} of {MODULES.length}
+            </p>
+            <p className="mt-2 max-w-lg text-lg text-white">{current.summary}</p>
+            <ul className="mt-6 max-w-lg space-y-3">
+              {current.features.slice(0, 5).map((f) => (
+                <li key={f} className="flex gap-3 text-[17px] font-semibold leading-snug text-brand-light">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <Link
+              to={`/modules#${current.id}`}
+              className="mt-8 inline-flex min-h-11 w-fit items-center gap-1 font-display text-lg font-bold uppercase tracking-wider text-brand hover:text-brand-light"
+            >
+              Read more <ChevronRight className="h-5 w-5" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
-        <ul className="space-y-3.5 lg:col-span-3">
-          {current.features.slice(0, 5).map((f) => (
-            <li key={f} className="flex gap-3 text-white/85">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/20">
-                <Check className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-              </span>
-              {f}
-            </li>
-          ))}
-        </ul>
       </div>
-    </>
+    </section>
+  );
+}
+
+function BenefitSlider() {
+  const [index, setIndex] = useState(0);
+  const item = BENEFITS[index];
+  const go = (delta: number) => setIndex((i) => (i + delta + BENEFITS.length) % BENEFITS.length);
+
+  return (
+    <section id="benefits" aria-roledescription="carousel" aria-label="Benefits of Retail AI" className="bg-brand py-16 sm:py-20">
+      <div className="mx-auto flex max-w-6xl items-center gap-2 px-2 sm:gap-6 sm:px-6">
+        <button
+          type="button"
+          onClick={() => go(-1)}
+          aria-label="Previous benefit"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-ink transition hover:bg-ink/10"
+        >
+          <ChevronLeft className="h-9 w-9" />
+        </button>
+
+        <div key={item.topic} className="animate-fade flex flex-1 flex-col items-center gap-6 text-center sm:flex-row sm:text-left" aria-live="polite">
+          <span className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-ink text-brand sm:h-32 sm:w-32">
+            <item.icon className="h-10 w-10 sm:h-14 sm:w-14" aria-hidden="true" />
+          </span>
+          <div>
+            <p className="font-display text-sm font-bold uppercase tracking-widest text-ink/70">
+              {item.topic} · {index + 1} / {BENEFITS.length}
+            </p>
+            <p className="mt-2 text-2xl font-semibold leading-snug text-ink sm:text-3xl">{item.text}</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => go(1)}
+          aria-label="Next benefit"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-ink transition hover:bg-ink/10"
+        >
+          <ChevronRight className="h-9 w-9" />
+        </button>
+      </div>
+      <div className="mt-8 flex justify-center gap-1">
+        {BENEFITS.map((b, i) => (
+          <button
+            key={b.topic}
+            type="button"
+            onClick={() => setIndex(i)}
+            aria-label={`Show benefit ${i + 1}: ${b.topic}`}
+            aria-current={i === index}
+            className="flex h-8 w-8 items-center justify-center"
+          >
+            <span className={`block h-2.5 rounded-full transition-all ${i === index ? "w-6 bg-ink" : "w-2.5 bg-ink/30"}`} />
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }
 
 export default function Home() {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-hero relative overflow-hidden pb-24 pt-32 text-white sm:pt-40 lg:pb-32">
-        <div className="mx-auto grid max-w-7xl items-center gap-16 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <div className="animate-fade">
-            <p className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> AI-powered fashion retail planning
-            </p>
-            <h1 className="mt-6 text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-              Buy the right stock.
-              <br />
-              <span className="text-gradient">Sell it at full price.</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/75">
-              Retail AI replaces planning spreadsheets with one platform for financial, merchandise, assortment,
-              open-to-buy and markdown planning — built for fashion retailers and connected to the ERP you already run.
-            </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link
-                to="/#contact"
-                className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand px-7 font-semibold text-ink shadow-lg shadow-brand/25 transition hover:bg-emerald-400"
-              >
-                Book a free demo
-                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
-              </Link>
-              <Link
-                to="/modules"
-                className="inline-flex min-h-12 items-center justify-center rounded-full px-7 font-semibold ring-1 ring-white/25 transition hover:bg-white/5 hover:ring-white/60"
-              >
-                Explore the modules
-              </Link>
-            </div>
-            <ul className="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
-              {["Works with your ERP", "AI forecasts built in", "Start with one module"].map((t) => (
-                <li key={t} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-brand" aria-hidden="true" /> {t}
+      <Hero />
+
+      {/* Introduction: yellow band */}
+      <section id="introduction" aria-labelledby="intro-heading" className="bg-brand">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-[2fr_3fr] md:gap-16 md:py-16 lg:px-8">
+          <Reveal>
+            <h2 id="intro-heading" className="text-3xl font-bold leading-tight text-ink sm:text-[2.1rem]">
+              Retail AI gives fashion retailers the information that's essential for an excellent operation:
+            </h2>
+          </Reveal>
+          <Reveal delay={100}>
+            <ul className="space-y-3">
+              {KEY_INSIGHTS.map((text) => (
+                <li key={text} className="flex gap-3 text-lg font-semibold text-ink/85">
+                  <span className="mt-2.5 h-2 w-2 shrink-0 bg-ink" aria-hidden="true" />
+                  {text}
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="animate-fade [animation-delay:150ms]">
-            <DashboardMock />
-          </div>
-        </div>
-      </section>
-
-      {/* Integrations strip */}
-      <section aria-label="Integrations" className="border-b border-slate-200 bg-white py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 sm:px-6 md:flex-row md:justify-between lg:px-8">
-          <p className="text-sm font-semibold text-slate-500">Connects with the systems you already use</p>
-          <ul className="flex flex-wrap justify-center gap-x-8 gap-y-2">
-            {INTEGRATIONS.map((name) => (
-              <li key={name} className="text-base font-bold text-slate-400">{name}</li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* About / key insights */}
-      <section id="about" aria-labelledby="about-heading" className="py-20 sm:py-28">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-wider text-brand-dark">About Retail AI</p>
-            <h2 id="about-heading" className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Everything you need to run an excellent fashion operation
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed text-slate-600">
-              Retail AI is a packaged planning solution designed specifically for fashion and apparel. It brings the
-              numbers your buyers, planners and finance team rely on into one place — and uses AI to tell you what to
-              do next.
-            </p>
-            <Link to="/modules" className="group mt-7 inline-flex min-h-11 items-center gap-2 font-semibold text-brand-dark">
-              See how the modules fit together
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
-            </Link>
-          </Reveal>
-          <ul className="space-y-3">
-            {KEY_INSIGHTS.map(({ icon: Icon, text }, i) => (
-              <Reveal as="li" key={text} delay={i * 70}>
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-brand/50 hover:shadow-md">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand-dark">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <span className="font-medium">{text}</span>
-                </div>
-              </Reveal>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mx-auto mt-20 grid max-w-7xl gap-6 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
-          {PILLARS.map(({ icon: Icon, title, text }, i) => (
-            <Reveal key={title} delay={i * 80}>
-              <div className="h-full rounded-3xl bg-mist p-7 ring-1 ring-transparent transition hover:bg-white hover:shadow-xl hover:ring-slate-200">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink text-brand">
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                </span>
-                <h3 className="mt-5 text-lg font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* Spreadsheet vs Retail AI */}
-      <section aria-labelledby="compare-heading" className="bg-mist py-20 sm:py-28">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading id="compare-heading" eyebrow="Why switch" title="Spreadsheets vs. Retail AI" />
-          <Reveal className="mt-12 overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-200/60 ring-1 ring-slate-200">
-            <div className="hidden grid-cols-[1fr_1.4fr_1.4fr] bg-ink text-sm font-semibold text-white sm:grid">
-              <div className="p-4 sm:px-6" />
-              <div className="flex items-center gap-2 p-4 sm:px-6"><FileSpreadsheet className="h-4 w-4 text-white/60" aria-hidden="true" /> Spreadsheets</div>
-              <div className="flex items-center gap-2 p-4 text-brand sm:px-6"><Sparkles className="h-4 w-4" aria-hidden="true" /> Retail AI</div>
-            </div>
-            <dl className="divide-y divide-slate-200">
-              {COMPARISON.map((row) => (
-                <div key={row.topic} className="grid gap-2 p-5 sm:grid-cols-[1fr_1.4fr_1.4fr] sm:gap-0 sm:p-0">
-                  <dt className="font-bold sm:p-5 sm:px-6">{row.topic}</dt>
-                  <dd className="flex items-start gap-2 text-slate-500 sm:p-5 sm:px-6">
-                    <X className="mt-0.5 h-4 w-4 shrink-0 text-red-500" aria-label="Spreadsheets:" />
-                    {row.before}
-                  </dd>
-                  <dd className="flex items-start gap-2 font-medium sm:bg-brand/5 sm:p-5 sm:px-6">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-dark" aria-label="Retail AI:" />
-                    {row.after}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </Reveal>
         </div>
       </section>
 
-      {/* Modules */}
-      <section id="modules" aria-labelledby="modules-heading" className="bg-ink py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            id="modules-heading"
-            light
-            eyebrow="Discover our modules"
-            title="One platform, from budget to markdown"
-            text="Start with the module you need most and add the rest as you grow. Every module shares the same data and the same AI forecast."
-          />
-          <ModuleTabs />
-        </div>
-      </section>
+      <Timeline />
+
+      <ModuleExplorer />
 
       {/* Users */}
-      <section id="users" aria-labelledby="users-heading" className="py-20 sm:py-28">
+      <section id="users" aria-labelledby="users-heading" className="bg-white py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            id="users-heading"
-            eyebrow="Who it's for"
-            title="Built for every team that touches the plan"
-            text="From the boardroom to the buying office, everyone works from the same live numbers."
-          />
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Reveal>
+            <SectionTitle id="users-heading">Who it's for</SectionTitle>
+            <p className="mt-4 max-w-2xl text-lg text-ink-soft">
+              From the boardroom to the buying office, everyone works from the same live numbers.
+            </p>
+          </Reveal>
+          <div className="mt-12 grid gap-px overflow-hidden rounded bg-[#e8dfd0] sm:grid-cols-2 lg:grid-cols-4">
             {USERS.map(({ icon: Icon, title, text }, i) => (
-              <Reveal key={title} delay={i * 80}>
-                <div className="group h-full rounded-3xl border border-slate-200 p-7 text-center transition hover:-translate-y-1 hover:border-brand/40 hover:shadow-xl">
-                  <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-brand/10 text-brand-dark transition group-hover:bg-brand group-hover:text-ink">
+              <Reveal key={title} delay={i * 80} className="bg-white">
+                <div className="group h-full p-8 text-center transition hover:bg-mist">
+                  <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand text-ink transition group-hover:scale-110">
                     <Icon className="h-7 w-7" aria-hidden="true" />
                   </span>
-                  <h3 className="mt-5 text-lg font-bold">{title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p>
+                  <h3 className="mt-5 font-display text-2xl font-bold uppercase tracking-wide">{title}</h3>
+                  <p className="mt-2 leading-relaxed text-ink-soft">{text}</p>
                 </div>
               </Reveal>
             ))}
@@ -438,69 +448,61 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="how-it-works" aria-labelledby="how-heading" className="bg-mist py-20 sm:py-28">
+      <BenefitSlider />
+
+      {/* Integrations & how it works: cream band, like "Our partners" */}
+      <section id="integrations" aria-labelledby="integrations-heading" className="bg-mist py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading id="how-heading" eyebrow="How it works" title="From spreadsheet to live plan in four steps" />
-          <div className="relative mt-14">
-          <div className="absolute left-[12.5%] right-[12.5%] top-[3.5rem] hidden h-0.5 bg-gradient-to-r from-brand/0 via-brand/40 to-brand/0 lg:block" aria-hidden="true" />
-          <ol className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Reveal>
+            <SectionTitle id="integrations-heading">Works with your ERP</SectionTitle>
+          </Reveal>
+          <ul className="mt-10 flex flex-wrap gap-4">
+            {INTEGRATIONS.map((name) => (
+              <li key={name} className="flex min-h-20 min-w-40 items-center justify-center gap-2 rounded bg-white px-6 font-display text-xl font-bold uppercase tracking-wide text-ink-soft shadow-sm">
+                <PlugZap className="h-5 w-5 text-brand-dark" aria-hidden="true" /> {name}
+              </li>
+            ))}
+          </ul>
+
+          <h3 className="mt-16 font-display text-2xl font-bold uppercase tracking-wide">How it works</h3>
+          <ol className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map(({ icon: Icon, title, text }, i) => (
-              <Reveal as="li" key={title} delay={i * 100} className="relative">
-                <div className="h-full rounded-3xl bg-white p-7 text-center shadow-sm ring-1 ring-slate-200">
-                  <span className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ink text-brand ring-8 ring-mist">
-                    <Icon className="h-6 w-6" aria-hidden="true" />
-                    <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-brand text-xs font-bold text-ink">
-                      {i + 1}
-                    </span>
-                  </span>
-                  <h3 className="mt-5 text-lg font-bold">{title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p>
+              <Reveal as="li" key={title} delay={i * 80}>
+                <div className="flex h-full gap-4 border-l-4 border-brand bg-white p-5 shadow-sm">
+                  <span className="font-display text-4xl font-bold leading-none text-brand-dark">{i + 1}</span>
+                  <div>
+                    <p className="flex items-center gap-2 font-display text-xl font-bold uppercase tracking-wide">
+                      <Icon className="h-5 w-5 text-brand-dark" aria-hidden="true" /> {title}
+                    </p>
+                    <p className="mt-1 text-ink-soft">{text}</p>
+                  </div>
                 </div>
               </Reveal>
             ))}
           </ol>
-          </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" aria-labelledby="faq-heading" className="py-20 sm:py-28">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading id="faq-heading" eyebrow="FAQ" title="Questions retailers ask us" />
-          <Reveal className="mt-12 space-y-3">
+      <section id="faq" aria-labelledby="faq-heading" className="bg-white py-20 sm:py-24">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionTitle id="faq-heading">Questions retailers ask</SectionTitle>
+          </Reveal>
+          <div className="mt-10 divide-y divide-[#e8dfd0] border-y border-[#e8dfd0]">
             {FAQS.map((item, i) => (
-              <details key={item.q} open={i === 0} className="group rounded-2xl border border-slate-200 bg-white transition open:border-brand/40 open:shadow-md">
-                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 text-left font-semibold">
+              <details key={item.q} open={i === 0} className="group">
+                <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-display text-xl font-bold uppercase tracking-wide transition hover:text-brand-dark">
                   {item.q}
-                  <ChevronDown className="faq-chevron h-5 w-5 shrink-0 text-slate-500 transition" aria-hidden="true" />
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-ink">
+                    <ChevronDown className="faq-chevron h-5 w-5 transition" aria-hidden="true" />
+                  </span>
                 </summary>
-                <p className="px-6 pb-5 leading-relaxed text-slate-600">{item.a}</p>
+                <p className="pb-6 pr-12 text-lg leading-relaxed text-ink-soft">{item.a}</p>
               </details>
             ))}
-          </Reveal>
-          <p className="mt-8 text-center text-slate-600">
-            Still have a question?{" "}
-            <Link to="/#contact" className="font-semibold text-brand-dark underline-offset-4 hover:underline">
-              Ask our team
-            </Link>
-          </p>
+          </div>
         </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-hero py-20 text-white">
-        <Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 text-center sm:px-6">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-5xl">Ready to retire the planning spreadsheet?</h2>
-          <p className="max-w-2xl text-lg text-white/75">Book a 30-minute demo and see how Retail AI would plan your next season.</p>
-          <Link
-            to="/#contact"
-            className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-brand px-8 font-semibold text-ink shadow-lg shadow-brand/25 transition hover:bg-emerald-400"
-          >
-            Book a free demo
-            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden="true" />
-          </Link>
-        </Reveal>
       </section>
 
       <ContactSection />

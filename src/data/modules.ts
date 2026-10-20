@@ -4,6 +4,8 @@ import { BrainCircuit, CalendarRange, Landmark, LayoutGrid, Percent, ShoppingBag
 export interface PlanningModule {
   id: string;
   title: string;
+  /** Compact label for navigation bars. */
+  shortTitle: string;
   icon: LucideIcon;
   summary: string;
   /** First five are shown on the homepage; all are shown on /modules. */
@@ -14,6 +16,7 @@ export const MODULES: PlanningModule[] = [
   {
     id: "financial-planning",
     title: "Financial Planning",
+    shortTitle: "Financial Planning",
     icon: Landmark,
     summary: "Set the top-line budget once and keep finance and merchandising working from the same numbers.",
     features: [
@@ -31,6 +34,7 @@ export const MODULES: PlanningModule[] = [
   {
     id: "merchandise-planning",
     title: "Merchandise Planning",
+    shortTitle: "Merchandise Planning",
     icon: CalendarRange,
     summary: "Translate the financial plan into seasonal, category-level plans your buyers can execute.",
     features: [
@@ -48,6 +52,7 @@ export const MODULES: PlanningModule[] = [
   {
     id: "assortment-planning",
     title: "Assortment Planning",
+    shortTitle: "Assortment Planning",
     icon: LayoutGrid,
     summary: "Build the range style by style while staying inside the merchandise plan.",
     features: [
@@ -65,6 +70,7 @@ export const MODULES: PlanningModule[] = [
   {
     id: "open-to-buy",
     title: "Open-to-Buy (OTB / WSSI)",
+    shortTitle: "Open to Buy",
     icon: ShoppingBag,
     summary: "Know every week exactly how much you can still buy — and where you are over- or under-stocked.",
     features: [
@@ -84,6 +90,7 @@ export const MODULES: PlanningModule[] = [
   {
     id: "markdown-planning",
     title: "Markdown Optimization",
+    shortTitle: "Markdown Planning",
     icon: Percent,
     summary: "Clear the right stock at the right time with the smallest possible hit to margin.",
     features: [
@@ -102,6 +109,7 @@ export const MODULES: PlanningModule[] = [
   {
     id: "demand-forecasting",
     title: "AI Demand Forecasting",
+    shortTitle: "AI Forecasting",
     icon: BrainCircuit,
     summary: "Machine-learning forecasts that power every other module with a sharper baseline.",
     features: [
